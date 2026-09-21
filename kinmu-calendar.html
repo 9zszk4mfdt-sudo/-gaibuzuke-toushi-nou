@@ -42,7 +42,7 @@ dialog{width:min(92vw,560px);border:0;border-radius:22px;background:var(--panel)
 
 <section class="card">
 <strong>勤務パターン</strong>
-<p class="note">基準：2026/10/1。1係は10/3が仕事、2係は10/2が仕事、3係は10/1が仕事。各係は「仕事→非番→公休」の完全3日周期。日勤は月〜金＝日勤、土日＝休み。</p>
+<p class="note">基準：2026/10/1。1係は10/3が仕事、2係は10/1が仕事、3係は10/2が仕事。各係は「仕事→非番→公休」の完全3日周期。日勤は月〜金＝日勤、土日＝休み。</p>
 <div class="backup"><button class="secondary" id="exportBtn">バックアップ書き出し</button><label class="secondary">読み込み<input hidden type="file" accept="application/json" id="importFile"></label></div>
 </section>
 </div>
@@ -64,7 +64,7 @@ const pad=n=>String(n).padStart(2,"0"), key=d=>`${d.getFullYear()}-${pad(d.getMo
 function daysDiff(a,b){let x=Date.UTC(a.getFullYear(),a.getMonth(),a.getDate()),y=Date.UTC(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((x-y)/86400000)}
 function shift(d,v=view){
  if(v==="日勤") return [0,6].includes(d.getDay())?"休み":"日勤";
- const workDay={"1係":new Date(2026,9,3),"2係":new Date(2026,9,2),"3係":new Date(2026,9,1)}[v];
+ const workDay={"1係":new Date(2026,9,3),"2係":new Date(2026,9,1),"3係":new Date(2026,9,2)}[v];
  const m=((daysDiff(d,workDay)%3)+3)%3; return ["仕事","非番","公休"][m];
 }
 function cls(s){return {"仕事":"work","非番":"offafter","公休":"holiday","日勤":"daywork","休み":"weekend"}[s]||""}
