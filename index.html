@@ -1,0 +1,1113 @@
+<!doctype html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#0d1117">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<meta name="apple-mobile-web-app-title" content="外付け投資脳">
+
+<title>外付け投資脳</title>
+
+<style>
+
+:root{--bg:#0d1117;--panel:#161b22;--line:#2d3744;--text:#f3f6fb;--muted:#9aa7b7;--blue:#8fd3ff;--violet:#b6a4ff;--good:#79df9d;--bad:#ff8e9b}
+
+*{box-sizing:border-box}
+
+body{
+
+  margin:0;
+
+  min-height:100vh;
+
+  color:var(--text);
+
+  background:
+
+    radial-gradient(circle at 10% 0,rgba(143,211,255,.12),transparent 30%),
+
+    radial-gradient(circle at 100% 10%,rgba(182,164,255,.12),transparent 30%),
+
+    var(--bg);
+
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif
+
+}
+
+button,input,textarea{font:inherit}
+
+.wrap{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom))}
+
+header{display:flex;justify-content:space-between;gap:16px;padding:28px 2px 20px}
+
+h1{margin:3px 0 6px;font-size:1.8rem}
+
+h2,h3{margin:0}
+
+header p,.sectionhead p,.backup p{margin:4px 0 0;color:var(--muted);font-size:.82rem}
+
+.eyebrow{color:var(--blue);font-size:.72rem;font-weight:800;letter-spacing:.12em}
+
+.iconbtn{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:#ffffff08;color:var(--text)}
+
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.card{background:linear-gradient(180deg,#ffffff0b,#ffffff04);border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 44px #00000032}
+
+.summary .card{padding:16px}
+
+.card span{display:block;color:var(--muted);font-size:.76rem;margin-bottom:7px}
+
+.card strong{font-size:1.08rem}
+
+.wide{margin-top:11px;padding:18px}
+
+.goalrow{display:flex;justify-content:space-between;align-items:end}
+
+.goalrow strong{display:block;font-size:1.25rem}
+
+.goalrow b{color:var(--blue)}
+
+.bar{height:9px;border-radius:999px;background:#090c11;margin:13px 0 8px;overflow:hidden}
+
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet));border-radius:999px}
+
+small{color:var(--muted)}
+
+.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:28px 0 12px}
+
+.primary,.secondary,.danger{border-radius:14px;padding:11px 14px;font-weight:800}
+
+.primary{border:0;background:linear-gradient(135deg,var(--blue),var(--violet));color:#0d1117}
+
+.secondary{border:1px solid var(--line);background:#1f2630;color:var(--text)}
+
+.danger{border:1px solid #5a3038;background:transparent;color:var(--bad)}
+
+#list{display:grid;gap:11px}
+
+.stock{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 15px 38px #00000026}
+
+.stockTop{display:flex;justify-content:space-between;gap:12px}
+
+.stockName{font-weight:900}
+
+.code{margin-left:7px;color:var(--muted);font-size:.73rem}
+
+.meta{color:var(--muted);font-size:.78rem;margin-top:4px}
+
+.pnl{font-weight:900;text-align:right}
+
+.good{color:var(--good)}
+
+.bad{color:var(--bad)}
+
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+
+.metric{padding:9px;background:#10151d;border:1px solid #252e3a;border-radius:12px}
+
+.metric span{font-size:.65rem}
+
+.metric b{font-size:.82rem}
+
+.thesis{border-top:1px dashed var(--line);padding-top:11px;margin-top:11px;font-size:.82rem;line-height:1.55;color:#d9e0ea}
+
+.thesis b{color:var(--blue)}
+
+.backup{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+
+.actions{display:flex;gap:8px}
+
+.file{display:inline-flex;align-items:center}
+
+dialog{
+
+  width:min(94vw,640px);
+
+  max-height:88vh;
+
+  overflow:auto;
+
+  border:0;
+
+  border-radius:24px;
+
+  padding:0;
+
+  background:var(--panel);
+
+  color:var(--text);
+
+  box-shadow:0 25px 80px #00000088
+
+}
+
+dialog::backdrop{background:#05070bb8;backdrop-filter:blur(7px)}
+
+dialog form{padding:20px}
+
+.dialogHead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+
+label{display:block;color:var(--muted);font-size:.78rem;font-weight:700;margin:12px 0}
+
+input,textarea{
+
+  width:100%;
+
+  margin-top:6px;
+
+  padding:12px;
+
+  border-radius:13px;
+
+  border:1px solid var(--line);
+
+  background:#0f141c;
+
+  color:var(--text);
+
+  outline:none
+
+}
+
+input:focus,textarea:focus{border-color:var(--blue)}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.dialogActions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+
+.full{width:100%}
+
+.empty{text-align:center;color:var(--muted);padding:36px;border:1px dashed var(--line);border-radius:18px}
+
+@media(max-width:520px){
+
+  .wrap{padding-left:14px;padding-right:14px}
+
+  .backup{align-items:flex-start;flex-direction:column}
+
+  h1{font-size:1.55rem}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrap">
+
+<header>
+
+  <div>
+
+    <div class="eyebrow">相棒専用版</div>
+
+    <h1>🧠 外付け投資脳</h1>
+
+    <p>「なんで買ったっけ？」をゼロにする投資メモ</p>
+
+  </div>
+
+  <button id="settingsBtn" class="iconbtn">⚙️</button>
+
+</header>
+
+<section class="summary">
+
+  <div class="card"><span>投資元本</span><strong id="totalCost">¥0</strong></div>
+
+  <div class="card"><span>評価額</span><strong id="marketValue">¥0</strong></div>
+
+  <div class="card"><span>含み損益</span><strong id="pnl">¥0</strong></div>
+
+  <div class="card"><span>年間配当見込</span><strong id="dividend">¥0</strong></div>
+
+</section>
+
+<section class="goal card wide">
+
+  <div class="goalrow">
+
+    <div>
+
+      <span>資産目標</span>
+
+      <strong id="goalText">¥20,000,000</strong>
+
+    </div>
+
+    <b id="goalPct">0%</b>
+
+  </div>
+
+  <div class="bar"><div id="barFill"></div></div>
+
+  <small>株以外の資産は設定から追加できます。</small>
+
+</section>
+
+<div class="sectionhead">
+
+  <div>
+
+    <h2>保有銘柄</h2>
+
+    <p>データはこのiPhone内だけに保存。</p>
+
+  </div>
+
+  <button id="addBtn" class="primary">＋ 銘柄追加</button>
+
+</div>
+
+<main id="list"></main>
+
+<section class="backup card wide">
+
+  <div>
+
+    <h3>バックアップ</h3>
+
+    <p>機種変更前などに書き出して保存。</p>
+
+  </div>
+
+  <div class="actions">
+
+    <button id="exportBtn" class="secondary">書き出し</button>
+
+    <label class="secondary file">
+
+      読み込み
+
+      <input id="importFile" type="file" accept="application/json" hidden>
+
+    </label>
+
+  </div>
+
+</section>
+
+</div>
+
+<dialog id="editDialog">
+
+<form id="editForm">
+
+  <div class="dialogHead">
+
+    <div>
+
+      <div class="eyebrow">銘柄カルテ</div>
+
+      <h2 id="dialogTitle">銘柄を追加</h2>
+
+    </div>
+
+    <button type="button" class="iconbtn" id="closeEdit">✕</button>
+
+  </div>
+
+  <input type="hidden" id="id">
+
+  <label>
+
+    銘柄名
+
+    <input id="name" required>
+
+  </label>
+
+  <div class="cols">
+
+    <label>
+
+      証券コード
+
+      <input id="code">
+
+    </label>
+
+    <label>
+
+      株数
+
+      <input id="shares" type="number" min="0" step="1" required>
+
+    </label>
+
+  </div>
+
+  <div class="cols">
+
+    <label>
+
+      平均買値
+
+      <input id="avgPrice" type="number" min="0" step="0.1" required>
+
+    </label>
+
+    <label>
+
+      現在値
+
+      <input id="currentPrice" type="number" min="0" step="0.1" placeholder="手入力">
+
+    </label>
+
+  </div>
+
+  <label>
+
+    1株あたり年間配当
+
+    <input id="dividendPerShare" type="number" min="0" step="0.1">
+
+  </label>
+
+  <label>
+
+    🧠 なぜ買った？
+
+    <textarea id="reason" rows="3"></textarea>
+
+  </label>
+
+  <label>
+
+    🚨 売る条件
+
+    <textarea id="sellRules" rows="3"></textarea>
+
+  </label>
+
+  <label>
+
+    👀 次に見るところ
+
+    <textarea id="watch" rows="3"></textarea>
+
+  </label>
+
+  <label>
+
+    📝 メモ
+
+    <textarea id="notes" rows="3"></textarea>
+
+  </label>
+
+  <div class="dialogActions">
+
+    <button type="button" id="deleteBtn" class="danger">削除</button>
+
+    <button type="submit" class="primary">保存</button>
+
+  </div>
+
+</form>
+
+</dialog>
+
+<dialog id="settingsDialog">
+
+<form id="settingsForm">
+
+  <div class="dialogHead">
+
+    <div>
+
+      <div class="eyebrow">相棒設定</div>
+
+      <h2>資産目標</h2>
+
+    </div>
+
+    <button type="button" class="iconbtn" id="closeSettings">✕</button>
+
+  </div>
+
+  <label>
+
+    目標資産額
+
+    <input id="goalAmount" type="number" min="0" step="10000">
+
+  </label>
+
+  <label>
+
+    株以外の資産
+
+    <input id="otherAssets" type="number" min="0" step="1000" placeholder="現金・投信など">
+
+  </label>
+
+  <button type="submit" class="primary full">保存</button>
+
+</form>
+
+</dialog>
+
+<script>
+
+const STOCK_KEY="gaibuzuke_stocks_v02";
+
+const SET_KEY="gaibuzuke_settings_v02";
+
+let stocks=load(STOCK_KEY,[]);
+
+let settings=load(SET_KEY,{
+
+  goalAmount:20000000,
+
+  otherAssets:0
+
+});
+
+const $=id=>document.getElementById(id);
+
+const yen=n=>
+
+  new Intl.NumberFormat(
+
+    "ja-JP",
+
+    {
+
+      style:"currency",
+
+      currency:"JPY",
+
+      maximumFractionDigits:0
+
+    }
+
+  ).format(Number(n)||0);
+
+const num=v=>Number(v)||0;
+
+const esc=s=>
+
+  String(s??"").replace(
+
+    /[&<>"']/g,
+
+    m=>({
+
+      "&":"&amp;",
+
+      "<":"&lt;",
+
+      ">":"&gt;",
+
+      "\"":"&quot;",
+
+      "'":"&#39;"
+
+    }[m])
+
+  );
+
+function load(k,f){
+
+  try{
+
+    const x=JSON.parse(localStorage.getItem(k));
+
+    return x??f;
+
+  }catch{
+
+    return f;
+
+  }
+
+}
+
+function save(){
+
+  localStorage.setItem(STOCK_KEY,JSON.stringify(stocks));
+
+  localStorage.setItem(SET_KEY,JSON.stringify(settings));
+
+  render();
+
+}
+
+function render(){
+
+  const list=$("list");
+
+  list.innerHTML=stocks.length
+
+    ?stocks.map(s=>{
+
+      const has=s.currentPrice!==""&&s.currentPrice!=null;
+
+      const cur=has?num(s.currentPrice):num(s.avgPrice);
+
+      const cost=num(s.shares)*num(s.avgPrice);
+
+      const value=num(s.shares)*cur;
+
+      const p=value-cost;
+
+      return `
+
+      <article class="stock" data-id="${s.id}">
+
+        <div class="stockTop">
+
+          <div>
+
+            <div>
+
+              <span class="stockName">${esc(s.name)}</span>
+
+              <span class="code">${esc(s.code)}</span>
+
+            </div>
+
+            <div class="meta">
+
+              ${Number(s.shares).toLocaleString()}株 /
+
+              平均 ${yen(s.avgPrice)}
+
+            </div>
+
+          </div>
+
+          <div class="pnl ${p>0?"good":p<0?"bad":""}">
+
+            ${has?`${p>=0?"+":""}${yen(p)}`:"現在値未入力"}
+
+          </div>
+
+        </div>
+
+        <div class="metrics">
+
+          <div class="metric">
+
+            <span>現在値</span>
+
+            <b>${has?yen(s.currentPrice):"—"}</b>
+
+          </div>
+
+          <div class="metric">
+
+            <span>評価額</span>
+
+            <b>${has?yen(value):"—"}</b>
+
+          </div>
+
+          <div class="metric">
+
+            <span>年間配当</span>
+
+            <b>${num(s.dividendPerShare)
+
+              ?yen(num(s.shares)*num(s.dividendPerShare))
+
+              :"—"}
+
+            </b>
+
+          </div>
+
+        </div>
+
+        <div class="thesis">
+
+          <b>🧠 なぜ買った？</b><br>
+
+          ${esc(s.reason||"未登録").replace(/\n/g,"<br>")}
+
+        </div>
+
+      </article>
+
+      `;
+
+    }).join("")
+
+    :`
+
+      <div class="empty">
+
+        まだ銘柄がありません。<br>
+
+        ＋ 銘柄追加から外付け脳に覚えさせよう🧠
+
+      </div>
+
+    `;
+
+  document.querySelectorAll(".stock").forEach(el=>{
+
+    el.onclick=()=>openEdit(el.dataset.id);
+
+  });
+
+  const cost=
+
+    stocks.reduce(
+
+      (a,s)=>a+num(s.shares)*num(s.avgPrice),
+
+      0
+
+    );
+
+  const market=
+
+    stocks.reduce(
+
+      (a,s)=>
+
+        a+
+
+        num(s.shares)*
+
+        (
+
+          s.currentPrice===""
+
+          ?num(s.avgPrice)
+
+          :num(s.currentPrice)
+
+        ),
+
+      0
+
+    );
+
+  const p=market-cost;
+
+  const d=
+
+    stocks.reduce(
+
+      (a,s)=>a+
+
+      num(s.shares)*
+
+      num(s.dividendPerShare),
+
+      0
+
+    );
+
+  $("totalCost").textContent=yen(cost);
+
+  $("marketValue").textContent=yen(market);
+
+  $("pnl").textContent=`${p>=0?"+":""}${yen(p)}`;
+
+  $("pnl").style.color=
+
+    p>0
+
+    ?"var(--good)"
+
+    :p<0
+
+    ?"var(--bad)"
+
+    :"var(--text)";
+
+  $("dividend").textContent=yen(d);
+
+  const goal=Math.max(
+
+    num(settings.goalAmount),
+
+    1
+
+  );
+
+  const assets=
+
+    market+
+
+    num(settings.otherAssets);
+
+  const pct=Math.max(
+
+    0,
+
+    Math.min(
+
+      100,
+
+      assets/goal*100
+
+    )
+
+  );
+
+  $("goalText").textContent=yen(goal);
+
+  $("goalPct").textContent=pct.toFixed(1)+"%";
+
+  $("barFill").style.width=pct+"%";
+
+}
+
+function openEdit(id){
+
+  const s=stocks.find(x=>x.id===id);
+
+  if(!s)return;
+
+  [
+
+    "id",
+
+    "name",
+
+    "code",
+
+    "shares",
+
+    "avgPrice",
+
+    "currentPrice",
+
+    "dividendPerShare",
+
+    "reason",
+
+    "sellRules",
+
+    "watch",
+
+    "notes"
+
+  ].forEach(k=>{
+
+    $(k).value=s[k]??"";
+
+  });
+
+  $("dialogTitle").textContent=s.name;
+
+  $("deleteBtn").style.visibility="visible";
+
+  $("editDialog").showModal();
+
+}
+
+$("addBtn").onclick=()=>{
+
+  $("editForm").reset();
+
+  $("id").value="";
+
+  $("dialogTitle").textContent="銘柄を追加";
+
+  $("deleteBtn").style.visibility="hidden";
+
+  $("editDialog").showModal();
+
+};
+
+$("closeEdit").onclick=()=>{
+
+  $("editDialog").close();
+
+};
+
+$("closeSettings").onclick=()=>{
+
+  $("settingsDialog").close();
+
+};
+
+$("editForm").onsubmit=e=>{
+
+  e.preventDefault();
+
+  const id=
+
+    $("id").value||
+
+    crypto.randomUUID();
+
+  const s={
+
+    id,
+
+    name:$("name").value.trim(),
+
+    code:$("code").value.trim(),
+
+    shares:num($("shares").value),
+
+    avgPrice:num($("avgPrice").value),
+
+    currentPrice:
+
+      $("currentPrice").value===""
+
+      ?""
+
+      :num($("currentPrice").value),
+
+    dividendPerShare:
+
+      $("dividendPerShare").value===""
+
+      ?""
+
+      :num($("dividendPerShare").value),
+
+    reason:$("reason").value.trim(),
+
+    sellRules:$("sellRules").value.trim(),
+
+    watch:$("watch").value.trim(),
+
+    notes:$("notes").value.trim()
+
+  };
+
+  const i=
+
+    stocks.findIndex(
+
+      x=>x.id===id
+
+    );
+
+  if(i>=0){
+
+    stocks[i]=s;
+
+  }else{
+
+    stocks.unshift(s);
+
+  }
+
+  save();
+
+  $("editDialog").close();
+
+};
+
+$("deleteBtn").onclick=()=>{
+
+  const id=$("id").value;
+
+  const s=
+
+    stocks.find(
+
+      x=>x.id===id
+
+    );
+
+  if(
+
+    s&&
+
+    confirm(
+
+      `${s.name}を削除しますか？`
+
+    )
+
+  ){
+
+    stocks=
+
+      stocks.filter(
+
+        x=>x.id!==id
+
+      );
+
+    save();
+
+    $("editDialog").close();
+
+  }
+
+};
+
+$("settingsBtn").onclick=()=>{
+
+  $("goalAmount").value=
+
+    settings.goalAmount||
+
+    20000000;
+
+  $("otherAssets").value=
+
+    settings.otherAssets||
+
+    0;
+
+  $("settingsDialog").showModal();
+
+};
+
+$("settingsForm").onsubmit=e=>{
+
+  e.preventDefault();
+
+  settings={
+
+    goalAmount:
+
+      num($("goalAmount").value)||
+
+      20000000,
+
+    otherAssets:
+
+      num($("otherAssets").value)
+
+  };
+
+  save();
+
+  $("settingsDialog").close();
+
+};
+
+$("exportBtn").onclick=()=>{
+
+  const blob=
+
+    new Blob(
+
+      [
+
+        JSON.stringify(
+
+          {
+
+            version:2,
+
+            stocks,
+
+            settings
+
+          },
+
+          null,
+
+          2
+
+        )
+
+      ],
+
+      {
+
+        type:"application/json"
+
+      }
+
+    );
+
+  const a=
+
+    document.createElement("a");
+
+  a.href=
+
+    URL.createObjectURL(blob);
+
+  a.download=
+
+    `外付け投資脳_${new Date().toISOString().slice(0,10)}.json`;
+
+  a.click();
+
+  setTimeout(
+
+    ()=>URL.revokeObjectURL(a.href),
+
+    500
+
+  );
+
+};
+
+$("importFile").onchange=async e=>{
+
+  const f=e.target.files?.[0];
+
+  if(!f)return;
+
+  try{
+
+    const d=
+
+      JSON.parse(
+
+        await f.text()
+
+      );
+
+    if(
+
+      !Array.isArray(d.stocks)
+
+    ){
+
+      throw 0;
+
+    }
+
+    stocks=d.stocks;
+
+    settings=
+
+      d.settings||
+
+      settings;
+
+    save();
+
+    alert("読み込みました");
+
+  }catch{
+
+    alert("読み込みに失敗しました");
+
+  }
+
+  e.target.value="";
+
+};
+
+render();
+
+</script>
+
+</body>
+
+</html>
