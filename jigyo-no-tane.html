@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>事業のタネ 🌱</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1010;--card:#151b1a;--line:#293230;--text:#f5f7f6;--muted:#aab5b1;--accent:#80d49d;--accent2:#b7f0c8;--danger:#ff8f8f}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+.wrap{max-width:760px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom))}
+h1{font-size:27px;margin:4px 0}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.row{display:flex;gap:9px;flex-wrap:wrap}.between{display:flex;justify-content:space-between;align-items:center;gap:12px}.stat{font-size:28px;font-weight:800}.muted{color:var(--muted)}
+button,.btn{border:1px solid var(--line);background:#1d2523;color:var(--text);padding:10px 13px;border-radius:12px;font-weight:700;font-size:14px}button.primary{background:var(--accent);color:#082011;border:0}button.danger{color:var(--danger)}
+input,textarea,select{width:100%;background:#0f1413;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px}textarea{min-height:84px;resize:vertical}label{display:block;color:var(--muted);font-size:12px;margin:12px 0 5px}.filters{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.chip{white-space:nowrap;padding:8px 11px}.chip.on{background:var(--accent);color:#082011;border-color:var(--accent)}
+.idea h3{margin:0;font-size:18px}.tag{display:inline-block;border:1px solid #355042;color:var(--accent2);border-radius:999px;padding:4px 8px;font-size:11px;margin:7px 5px 0 0}.meta{font-size:12px;color:var(--muted);margin-top:8px}.idea p{white-space:pre-wrap;margin:10px 0 0;line-height:1.55}.empty{text-align:center;padding:35px 10px;color:var(--muted)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:30px;background:var(--accent);color:#082011;border:0;box-shadow:0 8px 30px #0008}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:5}.modal.on{display:flex}.sheet{width:100%;max-height:92vh;overflow:auto;background:#111716;border-radius:22px 22px 0 0;padding:18px 16px calc(25px + env(safe-area-inset-bottom))}.sheetin{max-width:760px;margin:auto}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.note{font-size:12px;color:var(--muted);line-height:1.5}.privacy{border-left:3px solid var(--accent);padding-left:10px}.search{margin:10px 0}.small{font-size:12px}
+</style>
+</head><body><div class="wrap">
+<div class="between"><div><h1>事業のタネ 🌱</h1><div class="sub">相棒専用版 v0.1 ・ 未来の会社のタネを育てる</div></div><button onclick="openSettings()">⚙︎</button></div>
+<div class="card privacy"><b>🔒 この端末だけ</b><div class="note">入力した事業アイデアは、このページのコードやGitHubには書き込みません。SafariのこのiPhone内（localStorage）に保存します。機種変更やSafariデータ削除に備えて、定期的に「書き出し」でバックアップしてください。</div></div>
+<div class="card"><div class="between"><div><div class="muted small">保存中のタネ</div><div class="stat" id="count">0</div></div><div style="text-align:right"><div class="muted small">有望 🌟</div><div class="stat" id="promising">0</div></div></div></div>
+<input class="search" id="search" placeholder="🔍 アイデアを検索" oninput="render()">
+<div class="filters" id="filters"></div>
+<div id="list"></div>
+</div><button class="fab" onclick="openEditor()">＋</button>
+
+<div class="modal" id="editor"><div class="sheet"><div class="sheetin"><div class="between"><h2 id="editorTitle">タネを追加 🌱</h2><button onclick="closeEditor()">閉じる</button></div>
+<input type="hidden" id="eid">
+<label>アイデア名</label><input id="name" placeholder="例：AI×旅行記録サービス">
+<label>事業の種類</label><div class="grid2"><select id="category"></select><input id="newcat" placeholder="新しい種類を追加"></div>
+<label>何が不便？／何を良くしたい？</label><textarea id="problem"></textarea>
+<label>誰がお金を払う？</label><input id="customer" placeholder="例：旅行好きの個人">
+<label>どうやって稼ぐ？</label><input id="revenue" placeholder="例：月額500円 / 買い切り">
+<div class="grid2"><div><label>初期費用の予想</label><input id="cost" placeholder="例：100万円"></div><div><label>在庫</label><select id="inventory"><option>なし</option><option>少しあり</option><option>あり</option></select></div></div>
+<div class="grid2"><div><label>自分がやりたい度</label><select id="want"><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3" selected>★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select></div><div><label>状態</label><select id="status"><option>思いつき</option><option>調査中</option><option>有望</option><option>保留</option><option>いつかやる</option></select></div></div>
+<label>AIで省力化できそう？</label><input id="ai" placeholder="例：企画整理・顧客対応・開発補助">
+<label>将来性・差別化・気づきメモ</label><textarea id="memo"></textarea>
+<div class="row" style="margin-top:16px"><button class="primary" onclick="saveIdea()">保存する</button><button id="deleteBtn" class="danger" onclick="deleteIdea()" style="display:none">削除</button></div>
+</div></div></div>
+
+<div class="modal" id="settings"><div class="sheet"><div class="sheetin"><div class="between"><h2>設定・バックアップ</h2><button onclick="closeSettings()">閉じる</button></div>
+<div class="card"><b>事業の種類</b><div class="note">タネを追加するときに新しい種類も作れます。</div><div id="catList" style="margin-top:10px"></div></div>
+<div class="card"><b>バックアップ</b><div class="note">JSONを書き出してiCloud Drive等に保存できます。読み込みは現在のデータに追加します（同じIDは更新）。</div><div class="row" style="margin-top:12px"><button onclick="exportData()">書き出し</button><label class="btn">読み込み<input type="file" accept="application/json" onchange="importData(event)" style="display:none"></label></div></div>
+<div class="card"><b>最初のサンプル</b><div class="note">サンプルはHTMLに個人データとして埋め込まず、初回起動時だけこのiPhone内に作成されます。不要なら削除できます。</div><button style="margin-top:10px" onclick="seed(true)">サンプルを追加</button></div>
+</div></div></div>
+<script>
+const K='aibo_business_seeds_v01', CK='aibo_business_categories_v01', INIT='aibo_business_seeded_v01';
+const baseCats=['アプリ・SaaS','AI・業務効率化','投資・金融','旅行','クリエイター・音楽','コンテンツ・IP','その他'];
+const initialIdeas=[
+ {name:'小型Webサービス / SaaS事業',category:'アプリ・SaaS',problem:'日常の「これ不便」を、小さく使いやすいWebサービスで解決する。',customer:'特定の困りごとを持つ個人・小規模事業者',revenue:'月額課金 / 買い切り',cost:'50〜300万円（仮）',inventory:'なし',want:5,status:'有望',ai:'企画・試作・開発補助・サポート省力化',memo:'在庫・店舗を持たず、小さく検証できる形を重視。'},
+ {name:'クリエイター・アーティスト支援 / プロデュース',category:'クリエイター・音楽',problem:'才能や個性はあるのに、見せ方・組み合わせ・届け方が惜しい人を支援する。',customer:'クリエイター / アーティスト / 関係事業者',revenue:'企画料 / プロデュース料 / レベニューシェア等',cost:'100〜500万円〜（仮）',inventory:'なし',want:4,status:'思いつき',ai:'市場調査・企画・コンテンツ制作補助',memo:'個性を殺さず、アンバランスさを整える。固定費と契約リスクは要検討。'},
+ {name:'AI×旅行記録サービス',category:'旅行',problem:'旅行中の会話・写真・場所の記憶を、後から見返せる旅日記に整理する。',customer:'旅行好きの個人',revenue:'月額 / 旅行単位課金 / プレミアム機能',cost:'100〜500万円（仮）',inventory:'なし',want:5,status:'調査中',ai:'会話整理・写真分類・旅日記生成',memo:'「外付け旅の記憶」構想。写真保存コストとプライバシー設計が重要。'}
+];
+function load(){try{return JSON.parse(localStorage.getItem(K)||'[]')}catch{return[]}}
+function save(x){localStorage.setItem(K,JSON.stringify(x))}
+function cats(){try{return JSON.parse(localStorage.getItem(CK)||'null')||baseCats}catch{return baseCats}}
+function saveCats(x){localStorage.setItem(CK,JSON.stringify([...new Set(x)]))}
+function seed(force=false){let d=load();if(!force&&localStorage.getItem(INIT))return;if(force||d.length===0){const now=Date.now();initialIdeas.forEach((x,i)=>d.push({...x,id:'seed-'+now+'-'+i,created:new Date().toISOString()}));save(d);saveCats([...cats(),...initialIdeas.map(x=>x.category)]);localStorage.setItem(INIT,'1');render();closeSettings();}}
+let active='すべて';
+function render(){const d=load(), q=document.getElementById('search').value.toLowerCase();document.getElementById('count').textContent=d.length;document.getElementById('promising').textContent=d.filter(x=>x.status==='有望').length;const cs=['すべて',...cats()];document.getElementById('filters').innerHTML=cs.map(c=>`<button class="chip ${active===c?'on':''}" onclick='active=${JSON.stringify(c)};render()'>${esc(c)}</button>`).join('');let v=d.filter(x=>(active==='すべて'||x.category===active)&&JSON.stringify(x).toLowerCase().includes(q));v.sort((a,b)=>new Date(b.created)-new Date(a.created));document.getElementById('list').innerHTML=v.length?v.map(card).join(''):'<div class="empty">まだタネがありません 🌱<br>＋ から思いつきを放り込もう</div>';}
+function card(x){return `<div class="card idea" onclick='openEditor(${JSON.stringify(x.id)})'><div class="between"><h3>${esc(x.name)}</h3><span>${'★'.repeat(+x.want||0)}</span></div><span class="tag">${esc(x.category)}</span><span class="tag">${esc(x.status)}</span><span class="tag">在庫：${esc(x.inventory)}</span>${x.problem?`<p>${esc(x.problem)}</p>`:''}<div class="meta">💰 ${esc(x.revenue||'未設定')}　💸 ${esc(x.cost||'未設定')}</div></div>`}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fillCats(sel){document.getElementById('category').innerHTML=cats().map(c=>`<option ${c===sel?'selected':''}>${esc(c)}</option>`).join('')}
+function openEditor(id){const x=id?load().find(y=>y.id===id):null;document.getElementById('editor').classList.add('on');document.getElementById('editorTitle').textContent=x?'タネを編集 🌱':'タネを追加 🌱';fillCats(x?.category);['eid','name','problem','customer','revenue','cost','ai','memo'].forEach(k=>document.getElementById(k).value=x?.[k]||'');document.getElementById('inventory').value=x?.inventory||'なし';document.getElementById('want').value=x?.want||3;document.getElementById('status').value=x?.status||'思いつき';document.getElementById('newcat').value='';document.getElementById('deleteBtn').style.display=x?'inline-block':'none'}
+function closeEditor(){document.getElementById('editor').classList.remove('on')}
+function saveIdea(){let d=load(),id=document.getElementById('eid').value,name=document.getElementById('name').value.trim();if(!name)return alert('アイデア名を入れてね 🌱');let category=document.getElementById('newcat').value.trim()||document.getElementById('category').value;if(!cats().includes(category))saveCats([...cats(),category]);const x={id:id||crypto.randomUUID(),name,category,problem:val('problem'),customer:val('customer'),revenue:val('revenue'),cost:val('cost'),inventory:val('inventory'),want:+val('want'),status:val('status'),ai:val('ai'),memo:val('memo'),created:id?(d.find(y=>y.id===id)?.created||new Date().toISOString()):new Date().toISOString(),updated:new Date().toISOString()};const i=d.findIndex(y=>y.id===x.id);i>=0?d[i]=x:d.push(x);save(d);closeEditor();active='すべて';render()}
+function val(id){return document.getElementById(id).value.trim()}
+function deleteIdea(){const id=val('eid');if(confirm('このタネを削除する？')){save(load().filter(x=>x.id!==id));closeEditor();render()}}
+function openSettings(){document.getElementById('settings').classList.add('on');renderCats()}
+function closeSettings(){document.getElementById('settings').classList.remove('on')}
+function renderCats(){document.getElementById('catList').innerHTML=cats().map(c=>`<span class="tag">${esc(c)}</span>`).join('')}
+function exportData(){const payload={app:'事業のタネ',version:'0.1',exported:new Date().toISOString(),categories:cats(),ideas:load()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='事業のタネ_バックアップ_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const p=JSON.parse(r.result),incoming=p.ideas||[];let d=load(),m=new Map(d.map(x=>[x.id,x]));incoming.forEach(x=>m.set(x.id,x));save([...m.values()]);saveCats([...cats(),...(p.categories||[])]);render();renderCats();alert('読み込み完了 🌱')}catch{alert('読み込めないJSONです')}};r.readAsText(f);e.target.value=''}
+seed();render();
+</script></body></html>
