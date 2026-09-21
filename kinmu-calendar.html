@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="勤務カレンダー">
+<title>勤務カレンダー</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--line:#303844;--text:#f4f7fb;--muted:#9aa7b7;--accent:#8fd3ff;--accent2:#b6a4ff}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+.wrap{max-width:760px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:start;gap:12px}.eyebrow{font-size:.72rem;color:var(--accent);font-weight:800;letter-spacing:.1em}h1{margin:4px 0;font-size:1.65rem}p{color:var(--muted);margin:3px 0;font-size:.82rem}
+.card{background:linear-gradient(180deg,#ffffff0b,#ffffff04);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:14px}
+.today{display:flex;justify-content:space-between;align-items:center}.today strong{font-size:1.5rem}.badge{padding:9px 13px;border-radius:999px;background:#ffffff0c;font-weight:900}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:16px 0}.tabs button,.nav button,.secondary,.primary{border-radius:13px;padding:11px 8px;font-weight:800;font:inherit}
+.tabs button,.nav button,.secondary{border:1px solid var(--line);background:#171d25;color:var(--text)}.tabs button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0d1117;border:0}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:12px 0}.nav h2{margin:0;font-size:1.2rem}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;color:var(--muted);font-size:.72rem;padding:5px}
+.day{min-height:78px;border:1px solid var(--line);border-radius:13px;padding:7px;background:#12171e;position:relative}.day.other{opacity:.28}.day.todayDay{outline:2px solid var(--accent)}.num{font-size:.78rem;font-weight:800}.shift{font-size:.72rem;font-weight:900;margin-top:7px}.event{font-size:.65rem;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dfe6ef}
+.work{color:#ff9ba6}.offafter{color:#8fd3ff}.holiday{color:#8ee6ad}.daywork{color:#ffd38e}.weekend{color:#b7bec9}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.primary{border:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0d1117}
+.eventList{display:grid;gap:8px;margin-top:10px}.eventRow{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:13px;padding:11px}.eventRow small{color:var(--muted)}
+dialog{width:min(92vw,560px);border:0;border-radius:22px;background:var(--panel);color:var(--text);padding:20px}dialog::backdrop{background:#0009}label{display:block;color:var(--muted);font-size:.8rem;margin:12px 0}input,select,textarea{width:100%;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0f141b;color:var(--text);font:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}
+.note{font-size:.75rem;color:var(--muted);line-height:1.5}.backup{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+@media(max-width:520px){.day{min-height:70px;padding:5px}.shift{font-size:.64rem}.event{font-size:.6rem}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div><div class="eyebrow">相棒専用版</div><h1>📅 勤務カレンダー</h1><p>仕事 → 非番 → 公休を自動計算</p></div></header>
+
+<section class="card today"><div><p>今日の表示</p><strong id="todayDate"></strong><p id="todaySub"></p></div><div class="badge" id="todayShift"></div></section>
+
+<div class="tabs" id="tabs"></div>
+<div class="nav"><button id="prev">‹</button><h2 id="monthTitle"></h2><button id="next">›</button></div>
+<div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+<div class="grid" id="calendar"></div>
+
+<div class="sectionhead"><div><h2 style="margin:0">予定</h2><p>旅行・飲み会・ライブ・有休など</p></div><button class="primary" id="addEvent">＋予定</button></div>
+<div class="eventList" id="eventList"></div>
+
+<section class="card">
+<strong>勤務パターン</strong>
+<p class="note">基準：2026/10/1。1係は10/3が仕事、2係は10/2が仕事、3係は10/1が仕事。各係は「仕事→非番→公休」の完全3日周期。日勤は月〜金＝日勤、土日＝休み。</p>
+<div class="backup"><button class="secondary" id="exportBtn">バックアップ書き出し</button><label class="secondary">読み込み<input hidden type="file" accept="application/json" id="importFile"></label></div>
+</section>
+</div>
+
+<dialog id="eventDialog"><form id="eventForm">
+<h2 style="margin-top:0">予定を登録</h2>
+<label>日付<input id="eventDate" type="date" required></label>
+<label>予定<textarea id="eventText" rows="3" placeholder="例：ハワイ出発 ✈️" required></textarea></label>
+<div class="actions"><button type="button" class="secondary" id="cancelEvent">キャンセル</button><button class="primary">保存</button></div>
+</form></dialog>
+
+<script>
+const EVENT_KEY="aibo_shift_events_v01", VIEW_KEY="aibo_shift_view_v01";
+let events=JSON.parse(localStorage.getItem(EVENT_KEY)||"[]");
+let view=localStorage.getItem(VIEW_KEY)||"3係";
+let cursor=new Date(); cursor=new Date(cursor.getFullYear(),cursor.getMonth(),1);
+const tabs=["1係","2係","3係","日勤"], $=x=>document.getElementById(x);
+const pad=n=>String(n).padStart(2,"0"), key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function daysDiff(a,b){let x=Date.UTC(a.getFullYear(),a.getMonth(),a.getDate()),y=Date.UTC(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((x-y)/86400000)}
+function shift(d,v=view){
+ if(v==="日勤") return [0,6].includes(d.getDay())?"休み":"日勤";
+ const workDay={"1係":new Date(2026,9,3),"2係":new Date(2026,9,2),"3係":new Date(2026,9,1)}[v];
+ const m=((daysDiff(d,workDay)%3)+3)%3; return ["仕事","非番","公休"][m];
+}
+function cls(s){return {"仕事":"work","非番":"offafter","公休":"holiday","日勤":"daywork","休み":"weekend"}[s]||""}
+function renderTabs(){ $("tabs").innerHTML=tabs.map(t=>`<button class="${t===view?"active":""}" data-v="${t}">${t}</button>`).join(""); document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{view=b.dataset.v;localStorage.setItem(VIEW_KEY,view);render()})}
+function render(){
+ renderTabs(); const now=new Date(), ts=shift(now); $("todayDate").textContent=`${now.getMonth()+1}/${now.getDate()}（${"日月火水木金土"[now.getDay()]}）`; $("todayShift").textContent=ts; $("todayShift").className=`badge ${cls(ts)}`; $("todaySub").textContent=`${view}を表示中`;
+ $("monthTitle").textContent=`${cursor.getFullYear()}年 ${cursor.getMonth()+1}月`;
+ const first=new Date(cursor.getFullYear(),cursor.getMonth(),1), start=new Date(first); start.setDate(1-first.getDay());
+ let out="";
+ for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);const s=shift(d), ev=events.filter(e=>e.date===key(d));const other=d.getMonth()!==cursor.getMonth(), isToday=key(d)===key(now);out+=`<div class="day ${other?"other":""} ${isToday?"todayDay":""}" data-date="${key(d)}"><div class="num">${d.getDate()}</div><div class="shift ${cls(s)}">${s}</div>${ev.slice(0,2).map(e=>`<div class="event">• ${escapeHtml(e.text)}</div>`).join("")}</div>`}
+ $("calendar").innerHTML=out; document.querySelectorAll(".day").forEach(el=>el.onclick=()=>openEvent(el.dataset.date));
+ const ym=`${cursor.getFullYear()}-${pad(cursor.getMonth()+1)}`; const monthEvents=events.filter(e=>e.date.startsWith(ym)).sort((a,b)=>a.date.localeCompare(b.date));
+ $("eventList").innerHTML=monthEvents.length?monthEvents.map((e,i)=>`<div class="eventRow"><div><strong>${e.date.slice(5).replace("-","/")}</strong>　${escapeHtml(e.text)}<br><small>${shift(new Date(e.date+"T12:00:00"))}</small></div><button class="secondary" onclick="delEvent('${e.id}')">削除</button></div>`).join(""):`<p class="note">この月の予定はまだありません。</p>`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function openEvent(date=key(new Date())){$("eventForm").reset();$("eventDate").value=date;$("eventDialog").showModal()}
+$("prev").onclick=()=>{cursor.setMonth(cursor.getMonth()-1);render()}; $("next").onclick=()=>{cursor.setMonth(cursor.getMonth()+1);render()};
+$("addEvent").onclick=()=>openEvent(); $("cancelEvent").onclick=()=>$("eventDialog").close();
+$("eventForm").onsubmit=e=>{e.preventDefault();events.push({id:crypto.randomUUID(),date:$("eventDate").value,text:$("eventText").value.trim()});localStorage.setItem(EVENT_KEY,JSON.stringify(events));$("eventDialog").close();render()};
+window.delEvent=id=>{events=events.filter(e=>e.id!==id);localStorage.setItem(EVENT_KEY,JSON.stringify(events));render()};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({version:1,events,view},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`勤務カレンダー_${key(new Date())}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
+$("importFile").onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.events))throw 0;events=d.events;view=d.view||view;localStorage.setItem(EVENT_KEY,JSON.stringify(events));localStorage.setItem(VIEW_KEY,view);render();alert("読み込みました")}catch{alert("読み込みに失敗しました")}e.target.value=""};
+render();
+</script></body></html>
